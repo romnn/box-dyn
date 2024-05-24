@@ -87,4 +87,41 @@ mod tests {
             Some(("a".to_string(), "b".to_string()))
         );
     }
+
+    #[test]
+    fn generic_trait() {
+        #[box_dyn::box_dyn]
+        pub trait GenericTrait<T>: std::fmt::Display {
+            fn get(&self, input: T) -> T;
+        }
+    }
+
+    #[test]
+    fn generic_trait_where_clause() {
+        pub trait MyOtherTrait {}
+
+        #[box_dyn::box_dyn]
+        pub trait GenericTrait<T>: std::fmt::Display
+        where
+            T: MyOtherTrait,
+        {
+            fn get(&self, input: T) -> T;
+        }
+    }
+
+    #[test]
+    fn additional_bound() {
+        // #[box_dyn::box_dyn]
+        pub trait MySuperTrait {}
+
+        impl<T> MySuperTrait for T where T: std::fmt::Display {}
+
+        // #[box_dyn::box_dyn]
+        // #[box_dyn::box_dyn(additional_bound: std::fmt::Display)]
+        // #[box_dyn::box_dyn(std::fmt::Display + std::fmt::Debug)]
+        #[box_dyn::box_dyn(std::fmt::Display, std::fmt::Debug)]
+        pub trait MyTrait: MySuperTrait {
+            fn get(&self) -> String;
+        }
+    }
 }

@@ -1,13 +1,23 @@
 use quote::quote;
+use syn::parse::Parse;
 
 #[proc_macro_attribute]
 pub fn box_dyn(
-    _args: proc_macro::TokenStream,
+    args: proc_macro::TokenStream,
     input: proc_macro::TokenStream,
 ) -> proc_macro::TokenStream {
     // let mut input: syn::DeriveInput = syn::parse2(input.into()).unwrap();
+    let additional_bounds = syn::parse_macro_input!(args with syn::punctuated::Punctuated::<syn::Path, syn::Token![,]>::parse_terminated);
+    // let args_parsed: syn::punctuated::Punctuated<syn::Path, syn::Token![,]>::parse_terminated =
+    //     syn::parse2(input.into()).unwrap();
+    // let args_parsed = syn::punctuated::Punctuated::<syn::Path, syn::Token![,]>::parse_terminated
+    //     .parse2(args)
+    //     .unwrap();
     let trait_item: syn::ItemTrait = syn::parse2(input.into()).unwrap();
     let trait_name = &trait_item.ident;
+    let trait_generics = &trait_item.generics;
+    // let trait_with_generics = quote! { #trait_name };
+    // generics
     // dbg!(trait_name.to_string());
 
     let trait_items: Vec<_> = trait_item
@@ -102,14 +112,30 @@ pub fn box_dyn(
         })
         .collect();
 
+    let t = quote! { __BoxDynT };
+    let trait_where_predicates = &trait_generics
+        .where_clause
+        .as_ref()
+        .map(|clause| &clause.predicates);
+    let trait_generic_params = &trait_generics.params;
+
+    let t_bounds: Vec<_> = [quote! { #trait_name #trait_generics }]
+        .into_iter()
+        .chain(additional_bounds.into_iter().map(|b| quote! { #b }))
+        .collect();
+
     let out = quote! {
         #trait_item
 
-        impl<T> #trait_name for Box<T> where T: #trait_name {
+        impl<#t, #trait_generic_params> #trait_name #trait_generics for Box<#t>
+        where
+            #t: #(#t_bounds)+*,
+            #trait_where_predicates
+        {
             #(#trait_items)*
         }
     };
-    // println!("{}", pretty_print(&out));
+    println!("{}", pretty_print(&out));
     out.into()
 }
 
