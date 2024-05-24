@@ -1,0 +1,12 @@
+[workspace]
+resolver = "2"
+members = [ "derive" ]
+
+[package]
+name = "box-dyn-tests"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+box-dyn = { path = "./derive" }
