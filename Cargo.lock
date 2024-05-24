@@ -4,7 +4,7 @@ version = 3
 
 [[package]]
 name = "box-dyn"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "prettyplease",
  "proc-macro2",
@@ -14,7 +14,7 @@ dependencies = [
 
 [[package]]
 name = "box-dyn-tests"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "box-dyn",
 ]
