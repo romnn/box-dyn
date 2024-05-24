@@ -1,12 +1,36 @@
 [workspace]
 resolver = "2"
-members = [ "derive" ]
+members = [ "tests" ]
 
 [package]
-name = "box-dyn-tests"
-version = "0.0.1"
+name = "box-dyn"
+version = "0.0.3"
 edition = "2021"
-publish = false
+publish = true
+
+authors = ["romnn <contact@romnn.com>"]
+description = "Macro to implement Trait for Box<dyn Trait>"
+license-file = "../LICENSE"
+readme = "../README.md"
+documentation = "https://docs.rs/box-dyn"
+homepage = "https://github.com/romnn/box-dyn"
+repository = "https://github.com/romnn/box-dyn"
+categories = [
+  "rust-patterns",
+]
+keywords = [
+  "box",
+  "trait",
+  "forwarding",
+  "macro",
+]
+exclude = []
+
+[lib]
+proc-macro = true
 
 [dependencies]
-box-dyn = { path = "./derive" }
+syn = { version = "2", features = ["full"] }
+quote = "1"
+proc-macro2 = "1"
+prettyplease = "0"

@@ -4,7 +4,7 @@ version = 3
 
 [[package]]
 name = "box-dyn"
-version = "0.0.2"
+version = "0.0.3"
 dependencies = [
  "prettyplease",
  "proc-macro2",
