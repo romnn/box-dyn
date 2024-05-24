@@ -1,5 +1,5 @@
-use quote::quote;
-use syn::parse::Parse;
+use quote::{quote, ToTokens};
+use syn::punctuated::Punctuated;
 
 #[proc_macro_attribute]
 pub fn box_dyn(
@@ -7,7 +7,34 @@ pub fn box_dyn(
     input: proc_macro::TokenStream,
 ) -> proc_macro::TokenStream {
     // let mut input: syn::DeriveInput = syn::parse2(input.into()).unwrap();
-    let additional_bounds = syn::parse_macro_input!(args with syn::punctuated::Punctuated::<syn::Path, syn::Token![,]>::parse_terminated);
+    // let additional_bounds = syn::parse_macro_input!(args with syn::punctuated::Punctuated::<syn::Path, syn::Token![,]>::parse_terminated);
+    // $crate::parse::Parser::parse($parser, $tokenstream)
+    let additional_bounds_comma_separated = syn::parse::Parser::parse(
+        <Punctuated<syn::TraitBound, syn::Token![,]>>::parse_terminated,
+        args.clone().into(),
+    )
+    .map(|bounds| bounds.into_iter().collect());
+    // dbg!(additional_bounds_comma_separated.is_ok());
+
+    let additional_bounds_plus_separated = syn::parse::Parser::parse(
+        <Punctuated<syn::TraitBound, syn::Token![+]>>::parse_terminated,
+        args.clone().into(),
+    )
+    .map(|bounds| bounds.into_iter().collect());
+    // dbg!(additional_bounds_plus_separated.is_ok());
+
+    let additional_bounds: Vec<syn::TraitBound> = additional_bounds_plus_separated
+        .or(additional_bounds_comma_separated)
+        .unwrap();
+
+    // dbg!(additional_bounds
+    //     .iter()
+    //     .map(|b| quote! { #b })
+    //     .collect::<Vec<_>>());
+
+    // .unwrap();
+    // let additional_bounds = syn::parse_macro_input!(args with ;
+    // Punctuated<GenericParam, Token![,]>
     // let args_parsed: syn::punctuated::Punctuated<syn::Path, syn::Token![,]>::parse_terminated =
     //     syn::parse2(input.into()).unwrap();
     // let args_parsed = syn::punctuated::Punctuated::<syn::Path, syn::Token![,]>::parse_terminated

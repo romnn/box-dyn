@@ -119,7 +119,8 @@ mod tests {
         // #[box_dyn::box_dyn]
         // #[box_dyn::box_dyn(additional_bound: std::fmt::Display)]
         // #[box_dyn::box_dyn(std::fmt::Display + std::fmt::Debug)]
-        #[box_dyn::box_dyn(std::fmt::Display, std::fmt::Debug)]
+        #[box_dyn::box_dyn(std::fmt::Display + std::fmt::Debug + ?Sized)]
+        // #[box_dyn::box_dyn(std::fmt::Display, std::fmt::Debug)]
         pub trait MyTrait: MySuperTrait {
             fn get(&self) -> String;
         }
