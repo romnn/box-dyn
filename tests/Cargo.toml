@@ -4,5 +4,6 @@ version = "0.0.1"
 edition = "2021"
 publish = false
 
-[dependencies]
+[dev-dependencies]
+color-eyre = "0"
 box-dyn = { path = "../" }

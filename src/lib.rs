@@ -8,7 +8,7 @@ pub fn box_dyn(
     // let mut input: syn::DeriveInput = syn::parse2(input.into()).unwrap();
     let trait_item: syn::ItemTrait = syn::parse2(input.into()).unwrap();
     let trait_name = &trait_item.ident;
-    dbg!(trait_name.to_string());
+    // dbg!(trait_name.to_string());
 
     let trait_items: Vec<_> = trait_item
         .items
@@ -28,6 +28,7 @@ pub fn box_dyn(
                 syn::TraitItem::Fn(ref mut func) => {
                     // syn::TraitItemFn
                     let func_name = &func.sig.ident;
+                    // dbg!(&func_name);
                     let receiver = func
                         .sig
                         .inputs
@@ -46,8 +47,6 @@ pub fn box_dyn(
                     // pub reference: Option<(Token![&], Option<Lifetime>)>,
                     // pub mutability: Option<Token![mut]>,
 
-                    // }
-
                     let param_names: Vec<_> = func
                         .sig
                         .inputs
@@ -58,9 +57,23 @@ pub fn box_dyn(
                         })
                         .collect();
 
+                    // dbg!(&trait_name);
+                    // dbg!(&func_name);
+                    // dbg!(&self_typ);
+                    // dbg!(&param_names
+                    //     .iter()
+                    //     .map(|p| quote! { #p })
+                    //     .collect::<Vec<_>>());
+
+                    // println!(
+                    //     "{}",
+                    //     pretty_print(quote! {{
+                    //         #trait_name::#func_name(#self_typ, #(#param_names),*)
+                    //     }})
+                    // );
                     func.default = Some(
                         syn::parse2::<syn::Block>(quote! {{
-                            #trait_name::#func_name(#self_typ, #(#param_names)*)
+                            #trait_name::#func_name(#self_typ, #(#param_names),*)
                         }})
                         .unwrap(),
                     );
@@ -89,131 +102,16 @@ pub fn box_dyn(
         })
         .collect();
 
-    // let trait_impls: Vec<syn::ItemImpl> = vec![];
-    // syn::parse2::<syn::ItemImpl>(quote! {
-    //             impl<T> #trait_path for Box<T> where T: #trait_path {
-    //             }
-    //         })
-
     let out = quote! {
         #trait_item
 
         impl<T> #trait_name for Box<T> where T: #trait_name {
             #(#trait_items)*
         }
-        // #trait_impl
-        // #(#trait_impls)*
     };
-    println!("{}", pretty_print(&out));
+    // println!("{}", pretty_print(&out));
     out.into()
 }
-
-// #[proc_macro_derive(BoxDyn)]
-// pub fn impl_trait_derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
-//     let mut input: syn::DeriveInput = syn::parse2(input.into()).unwrap();
-//     let trait_impls: Vec<syn::ItemImpl> = vec![];
-//     // syn::parse2::<syn::ItemImpl>(quote! {
-//     //             impl<T> #trait_path for Box<T> where T: #trait_path {
-//     //             }
-//     //         })
-//
-//     let out = quote! {
-//         impl<T> #trait_path for Box<T> where T: #trait_path {
-//         }
-//         // #trait_impl
-//         // #(#trait_impls)*
-//     };
-//     println!("{}", pretty_print(&out));
-//     out.into()
-// }
-
-// #[proc_macro]
-// pub fn impl_trait(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
-//     let mut input: syn::ItemFn = syn::parse2(input.clone().into()).unwrap();
-//     // let mut func_ast: syn::ItemFn = syn::parse2(input.clone().into()).unwrap();
-//     // let mut test: Vec<syn::Path> =
-//     // let mut test: syn::ItemStruct =
-//     let types: Vec<syn::Type> =
-//         syn::parse_macro_input!(input with syn::punctuated::Punctuated::<syn::Type, syn::Token![,]>::parse_terminated)
-//             .into_iter()
-//             .collect();
-//
-//     // dbg!(&types.iter().map(|t| quote! { #t }).collect::<Vec<_>>());
-//     let traits: Vec<_> = types
-//         .into_iter()
-//         .map(|t| match t {
-//             syn::Type::Path(typ) => typ.path,
-//             _ => panic!("expected list of trait names"),
-//         })
-//         .collect();
-//
-//     dbg!(&traits
-//         .iter()
-//         .map(|typ| quote! { #typ }.to_string())
-//         .collect::<Vec<_>>());
-//     // dbg!(&types.iter().map(|t| quote! { #t }).collect::<Vec<_>>());
-//
-//     // let mut test: syn::Attribute =
-//     //     syn::parse2("MyTrait, crate::test::Test2".parse().unwrap()).unwrap();
-//
-//     // dbg!(&test.in);
-//     // let values = vec![];
-//     // let a = "test";
-//     // if a == "uwe" {
-//     //     println!("hi");
-//     //
-//     //     if a == "petra" {
-//     //         println!("ho");
-//     //     }
-//     //     // here
-//     // }
-//     // "fn answer() -> u32 { 42 }".parse().unwrap()
-//
-//     // fn get_target_traits(ast: ItemStruct) -> Vec<String> {
-//     // let tests: Vec<_> = test
-//     //     // .attrs
-//     //     .iter()
-//     //     .filter_map(|attr| match &attr.meta {
-//     //         syn::Meta::List(l) => match l.path.segments.first() {
-//     //             Some(seg) => Some((&seg.ident, l)),
-//     //             _ => None,
-//     //         },
-//     //         _ => None,
-//     //     })
-//     //     .filter(|a| a.0 == "box_dyn_traits")
-//     //     .flat_map(|a| {
-//     //         a.1.tokens
-//     //             .clone()
-//     //             .into_iter()
-//     //             .map(|t| t.to_string())
-//     //             .filter(|t| t != ",")
-//     //     })
-//     //     .collect();
-//
-//     // dbg!(&tests);
-//
-//     let trait_impls: Vec<_> = traits
-//         .into_iter()
-//         .map(|trait_path| {
-//             // let method_signatures =
-//             syn::parse2::<syn::ItemImpl>(quote! {
-//                 impl<T> #trait_path for Box<T> where T: #trait_path {
-//                 }
-//             })
-//             .unwrap()
-//         })
-//         .collect();
-//
-//     // let test: Vec<proc_macro2::TokenStream> = vec![];
-//     let out = quote! {
-//         // struct _Test {}
-//         // #test
-//         #(#trait_impls)*
-//         // #trait_impls
-//     };
-//     println!("{}", pretty_print(&out));
-//     out.into()
-// }
 
 #[allow(dead_code)]
 fn pretty_print<T>(input: T) -> String
