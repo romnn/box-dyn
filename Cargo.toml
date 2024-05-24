@@ -9,9 +9,9 @@ edition = "2021"
 publish = true
 
 authors = ["romnn <contact@romnn.com>"]
-description = "Macro to implement Trait for Box<dyn Trait>"
-license-file = "../LICENSE"
-readme = "../README.md"
+description = "Macro to derive the implementation of Trait for Box<T: Trait>"
+license-file = "LICENSE"
+readme = "README.md"
 documentation = "https://docs.rs/box-dyn"
 homepage = "https://github.com/romnn/box-dyn"
 repository = "https://github.com/romnn/box-dyn"
